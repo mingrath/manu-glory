@@ -50,12 +50,15 @@ export function StreakCounter({ streak, tagline, carrick }: StreakCounterProps) 
 
   return (
     <section className="relative flex min-h-screen flex-col items-center justify-center px-4">
-      {/* Floodlight haze */}
+      {/* Floodlight haze — Old Trafford at night */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          background:
-            "radial-gradient(ellipse at 50% 30%, rgba(227,27,35,0.05) 0%, transparent 70%)",
+          background: [
+            "radial-gradient(ellipse 60% 40% at 50% 30%, rgba(227,27,35,0.1) 0%, transparent 70%)",
+            "radial-gradient(circle at 20% 20%, rgba(227,27,35,0.04) 0%, transparent 50%)",
+            "radial-gradient(circle at 80% 20%, rgba(227,27,35,0.04) 0%, transparent 50%)",
+          ].join(", "),
         }}
         aria-hidden="true"
       />

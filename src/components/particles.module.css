@@ -16,6 +16,20 @@
   animation: drift linear infinite;
 }
 
+/* Every 3rd particle gets a warm red tint */
+.particle:nth-child(3n) {
+  background: #E31B23;
+  width: 2px;
+  height: 2px;
+}
+
+/* Every 4th particle gets a gold tint */
+.particle:nth-child(4n) {
+  background: #D4A843;
+  width: 2px;
+  height: 2px;
+}
+
 @keyframes drift {
   0% {
     opacity: 0;
