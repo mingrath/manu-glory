@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { animate, useMotionValue, useTransform, motion } from "motion/react";
 
 interface CarrickStats {
@@ -63,7 +64,41 @@ export function StreakCounter({ streak, tagline, carrick }: StreakCounterProps) 
         aria-hidden="true"
       />
 
+      {/* Large crest watermark behind the streak number */}
+      <motion.div
+        className="pointer-events-none absolute inset-0 flex items-center justify-center"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1.2, ease: "easeOut" }}
+        aria-hidden="true"
+      >
+        <Image
+          src="/crest.svg"
+          alt=""
+          width={400}
+          height={400}
+          className="h-[300px] w-[300px] opacity-[0.04] md:h-[500px] md:w-[500px]"
+          priority
+        />
+      </motion.div>
+
       <h1 className="relative z-10 text-center">
+        {/* Small crest above the title */}
+        <motion.span
+          className="mb-4 flex justify-center"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <Image
+            src="/crest.svg"
+            alt="Manchester United"
+            width={48}
+            height={48}
+            className="h-10 w-10 md:h-12 md:w-12"
+            priority
+          />
+        </motion.span>
         <span className="block font-heading text-sm uppercase tracking-[0.3em] text-text-secondary md:text-base">
           Unbeaten Streak
         </span>
