@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { castVote } from "@/lib/votes";
 
-export const runtime = "edge";
-
 export async function POST(request: NextRequest) {
   try {
     const { matchId, vote } = await request.json();
