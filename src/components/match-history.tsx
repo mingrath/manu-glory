@@ -21,6 +21,9 @@ export function MatchHistory({ matches, lastUpdated }: MatchHistoryProps) {
   const [expanded, setExpanded] = useState(false);
   const visible = expanded ? matches : matches.slice(0, INITIAL_SHOW);
 
+  const wins = matches.filter((m) => m.result === "W").length;
+  const draws = matches.filter((m) => m.result === "D").length;
+
   const dateFormatter = new Intl.DateTimeFormat("en-GB", {
     day: "numeric",
     month: "short",
@@ -37,43 +40,115 @@ export function MatchHistory({ matches, lastUpdated }: MatchHistoryProps) {
   });
 
   return (
-    <section className="mx-auto w-full max-w-md px-4 py-16">
-      <h3 className="mb-6 text-center font-heading text-sm uppercase tracking-[0.3em] text-text-secondary">
+    <section className="mx-auto w-full max-w-lg px-4 py-16">
+      <h3 className="mb-2 text-center font-heading text-sm uppercase tracking-[0.3em] text-text-secondary">
         The Streak
       </h3>
 
+      {/* Stats summary bar */}
+      <div className="mb-6 flex items-center justify-center gap-6">
+        <div className="text-center">
+          <span className="block font-display text-3xl text-text-primary">
+            {matches.length}
+          </span>
+          <span className="font-body text-[10px] uppercase tracking-wider text-text-secondary">
+            Unbeaten
+          </span>
+        </div>
+        <div className="h-8 w-px bg-text-secondary/20" />
+        <div className="text-center">
+          <span className="block font-display text-3xl text-win">
+            {wins}
+          </span>
+          <span className="font-body text-[10px] uppercase tracking-wider text-text-secondary">
+            Wins
+          </span>
+        </div>
+        <div className="h-8 w-px bg-text-secondary/20" />
+        <div className="text-center">
+          <span className="block font-display text-3xl text-draw">
+            {draws}
+          </span>
+          <span className="font-body text-[10px] uppercase tracking-wider text-text-secondary">
+            Draws
+          </span>
+        </div>
+        <div className="h-8 w-px bg-text-secondary/20" />
+        <div className="text-center">
+          <span className="block font-display text-3xl text-text-primary">
+            0
+          </span>
+          <span className="font-body text-[10px] uppercase tracking-wider text-text-secondary">
+            Losses
+          </span>
+        </div>
+      </div>
+
+      {/* Win rate visual bar */}
+      <div className="mb-8">
+        <div className="flex h-3 w-full overflow-hidden rounded-full">
+          <motion.div
+            className="bg-win"
+            initial={{ width: 0 }}
+            animate={{ width: `${(wins / matches.length) * 100}%` }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+          />
+          <motion.div
+            className="bg-draw"
+            initial={{ width: 0 }}
+            animate={{ width: `${(draws / matches.length) * 100}%` }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
+          />
+        </div>
+        <div className="mt-2 flex justify-between">
+          <span className="font-mono text-[10px] text-win">
+            {Math.round((wins / matches.length) * 100)}% win rate
+          </span>
+          <span className="font-mono text-[10px] text-text-secondary">
+            0% lost
+          </span>
+        </div>
+      </div>
+
       {isStale ? (
         <p className="mb-4 text-center font-body text-xs text-text-secondary">
-          ⏱ Updated {relativeFormatter.format(-hoursAgo, "hour")}
+          \u23F1 Updated {relativeFormatter.format(-hoursAgo, "hour")}
         </p>
       ) : null}
 
       <div className="space-y-2">
         <AnimatePresence initial={false}>
-          {visible.map((match) => (
+          {visible.map((match, i) => (
             <motion.div
               key={match.id}
               layout
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className={`flex items-center gap-3 rounded-lg border-l-4 bg-surface px-4 py-3 ${resultColors[match.result]}`}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ delay: i * 0.05 }}
+              className={`group flex items-center gap-3 rounded-lg border-l-4 px-4 py-3 ${resultColors[match.result]} ${
+                match.result === "W"
+                  ? "bg-win/[0.06] hover:bg-win/[0.1]"
+                  : "bg-surface hover:bg-surface/80"
+              } transition-[background-color] duration-200`}
             >
               <span
-                className={`font-mono text-xs font-bold ${
+                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md font-mono text-xs font-bold ${
                   match.result === "W"
-                    ? "text-win"
+                    ? "bg-win/20 text-win"
                     : match.result === "D"
-                      ? "text-draw"
-                      : "text-loss"
+                      ? "bg-draw/20 text-draw"
+                      : "bg-loss/20 text-loss"
                 }`}
               >
                 {match.result}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="truncate font-body text-sm text-text-primary">
+                <p className="truncate font-body text-sm font-medium text-text-primary">
                   {match.homeOrAway === "A" ? `${match.opponent} ` : ""}
-                  {match.scoreHome}-{match.scoreAway}
+                  <span className="font-mono">
+                    {match.scoreHome}-{match.scoreAway}
+                  </span>
                   {match.homeOrAway === "H" ? ` ${match.opponent}` : ""}
                 </p>
               </div>
@@ -92,8 +167,8 @@ export function MatchHistory({ matches, lastUpdated }: MatchHistoryProps) {
           style={{ touchAction: "manipulation" }}
         >
           {expanded
-            ? "Show Less ▴"
-            : `Show All ${matches.length} Matches ▾`}
+            ? "Show Less \u25B4"
+            : `Show All ${matches.length} Matches \u25BE`}
         </button>
       ) : null}
     </section>
