@@ -2,7 +2,9 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import confetti from "canvas-confetti";
 import { VoteResultBar } from "./vote-result-bar";
+import { useSounds } from "./sound-toggle";
 
 interface VoteSectionProps {
   matchId: string;
@@ -15,6 +17,24 @@ interface VoteSectionProps {
 type VoteState = "idle" | "voting" | "voted" | "error";
 
 const STORAGE_KEY = "manu-glory-votes-v1";
+
+const CHEEKY_SUBTITLES = [
+  "obviously yes but we ask anyway",
+  "trick question tbh",
+  "as if there's any doubt",
+  "the answer is always yes",
+  "we already know the answer",
+  "spoiler: we win",
+];
+
+const HYPE_REACTIONS = [
+  "THIS IS THE WAY 🫡",
+  "WE MOVE 🔥",
+  "INEVITABLE 💀",
+  "CARRICK BALL SUPREMACY",
+  "VIBES: IMMACULATE ✨",
+  "THE PROPHECY CONTINUES",
+];
 
 function getStoredVote(matchId: string): string | null {
   try {
@@ -42,10 +62,12 @@ export function VoteSection({
   homeOrAway,
   initialVotes,
 }: VoteSectionProps) {
-  // Always start as "idle" to match server render, then check localStorage after hydration
   const [state, setState] = useState<VoteState>("idle");
   const [userVote, setUserVote] = useState<string | null>(null);
   const [votes, setVotes] = useState(initialVotes);
+  const [subtitle, setSubtitle] = useState(CHEEKY_SUBTITLES[0]);
+  const [hypeReaction, setHypeReaction] = useState(HYPE_REACTIONS[0]);
+  const { playAirHorn } = useSounds();
 
   useEffect(() => {
     const existing = getStoredVote(matchId);
@@ -53,6 +75,8 @@ export function VoteSection({
       setUserVote(existing);
       setState("voted");
     }
+    setSubtitle(CHEEKY_SUBTITLES[Math.floor(Math.random() * CHEEKY_SUBTITLES.length)]);
+    setHypeReaction(HYPE_REACTIONS[Math.floor(Math.random() * HYPE_REACTIONS.length)]);
   }, [matchId]);
 
   const dateFormatter = new Intl.DateTimeFormat("en-GB", {
@@ -78,11 +102,22 @@ export function VoteSection({
         setUserVote(vote);
         saveVote(matchId, vote);
         setState("voted");
+
+        // Celebration on vote!
+        playAirHorn();
+        if (vote === "yes") {
+          confetti({
+            particleCount: 60,
+            spread: 50,
+            origin: { y: 0.7 },
+            colors: ["#E31B23", "#D4A843"],
+          });
+        }
       } catch {
         setState("error");
       }
     },
-    [matchId]
+    [matchId, playAirHorn]
   );
 
   const total = votes.yes + votes.no;
@@ -93,20 +128,25 @@ export function VoteSection({
       id="vote"
       className="flex min-h-[60vh] flex-col items-center justify-center px-4 py-16"
     >
-      <p className="mb-2 font-heading text-xs uppercase tracking-[0.2em] text-text-secondary md:text-sm">
+      <p className="mb-2 font-heading text-sm uppercase tracking-[0.2em] text-text-secondary md:text-base">
         Next Match — {dateFormatter.format(new Date(matchDate))}
       </p>
 
       <h2
-        className="mb-8 text-center font-heading text-2xl font-bold uppercase text-text-primary md:text-3xl"
+        className="mb-2 text-center font-heading text-3xl font-bold uppercase text-text-primary md:text-4xl"
         style={{ textWrap: "balance" }}
       >
         Will United Beat {opponent}?
       </h2>
 
+      {/* Cheeky subtitle */}
+      <p className="mb-8 font-body text-sm italic text-text-secondary/60 md:text-base">
+        ({subtitle})
+      </p>
+
       {isEmptyState ? (
-        <p className="mb-6 text-center font-heading text-sm uppercase tracking-wider text-gold">
-          Be the first to vote
+        <p className="mb-6 text-center font-impact text-base uppercase tracking-wider text-gold">
+          Be the first to vote 👀
         </p>
       ) : null}
 
@@ -123,7 +163,7 @@ export function VoteSection({
               onClick={() => handleVote("yes")}
               disabled={state === "voting"}
               aria-label={`Vote yes, United will beat ${opponent}`}
-              className="flex-1 rounded-xl bg-red px-8 py-5 font-heading text-lg font-semibold uppercase tracking-wider text-text-primary transition-[transform,box-shadow] duration-200 hover:shadow-[0_0_40px_rgba(227,27,35,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red focus-visible:ring-offset-2 focus-visible:ring-offset-bg active:scale-[0.97] disabled:opacity-60"
+              className="flex-1 rounded-xl bg-red px-8 py-5 font-impact text-xl uppercase tracking-wider text-text-primary transition-[transform,box-shadow] duration-200 hover:shadow-[0_0_40px_rgba(227,27,35,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red focus-visible:ring-offset-2 focus-visible:ring-offset-bg active:scale-[0.97] disabled:opacity-60"
               style={{ touchAction: "manipulation" }}
             >
               {state === "voting" ? (
@@ -152,17 +192,17 @@ export function VoteSection({
                   Voting…
                 </span>
               ) : (
-                "Yes, We Win"
+                "YES WE WIN 🔥"
               )}
             </button>
             <button
               onClick={() => handleVote("no")}
               disabled={state === "voting"}
               aria-label={`Vote no, United will not beat ${opponent}`}
-              className="flex-1 rounded-xl border border-text-secondary/20 bg-surface px-8 py-5 font-heading text-lg font-semibold uppercase tracking-wider text-text-primary transition-[transform,box-shadow] duration-200 hover:border-text-secondary/40 hover:brightness-125 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red focus-visible:ring-offset-2 focus-visible:ring-offset-bg active:scale-[0.97] disabled:opacity-60"
+              className="flex-1 rounded-xl border border-text-secondary/20 bg-surface px-8 py-5 font-heading text-xl font-semibold uppercase tracking-wider text-text-primary transition-[transform,box-shadow] duration-200 hover:border-text-secondary/40 hover:brightness-125 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red focus-visible:ring-offset-2 focus-visible:ring-offset-bg active:scale-[0.97] disabled:opacity-60"
               style={{ touchAction: "manipulation" }}
             >
-              Not Today
+              Not Today 😬
             </button>
           </motion.div>
         ) : (
@@ -172,9 +212,20 @@ export function VoteSection({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <p className="font-heading text-sm uppercase tracking-wider text-gold">
-              You voted: {userVote === "yes" ? "Yes, We Win" : "Not Today"}
+            <p className="font-heading text-base uppercase tracking-wider text-gold">
+              You voted: {userVote === "yes" ? "YES WE WIN 🔥" : "Not Today 😬"}
             </p>
+
+            {/* Hype reaction */}
+            <motion.p
+              className="font-impact text-lg uppercase text-red"
+              initial={{ scale: 0, rotate: -10 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 300, delay: 0.3 }}
+            >
+              {hypeReaction}
+            </motion.p>
+
             <VoteResultBar yes={votes.yes} no={votes.no} />
             <button
               onClick={() => {
@@ -182,7 +233,7 @@ export function VoteSection({
                 url.searchParams.set("vote", userVote || "yes");
                 navigator.clipboard.writeText(url.toString());
               }}
-              className="mt-2 rounded-lg border border-text-secondary/20 px-6 py-2.5 font-body text-sm text-text-secondary transition-[transform,border-color] duration-200 hover:border-text-secondary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red focus-visible:ring-offset-2 focus-visible:ring-offset-bg active:scale-[0.97]"
+              className="mt-2 rounded-lg border border-text-secondary/20 px-6 py-2.5 font-body text-base text-text-secondary transition-[transform,border-color] duration-200 hover:border-text-secondary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red focus-visible:ring-offset-2 focus-visible:ring-offset-bg active:scale-[0.97]"
               style={{ touchAction: "manipulation" }}
             >
               Share Your Vote →
@@ -193,7 +244,7 @@ export function VoteSection({
 
       {state === "error" ? (
         <p className="mt-4 text-center font-body text-sm text-text-secondary">
-          Couldn't register your vote. Tap to try again.
+          Couldn&apos;t register your vote. Tap to try again.
         </p>
       ) : null}
     </section>

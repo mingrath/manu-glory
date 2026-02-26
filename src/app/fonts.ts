@@ -1,4 +1,4 @@
-import { Anton, Oswald, DM_Sans, JetBrains_Mono } from "next/font/google";
+import { Anton, Oswald, DM_Sans, JetBrains_Mono, Black_Ops_One } from "next/font/google";
 
 export const anton = Anton({
   weight: "400",
@@ -23,4 +23,11 @@ export const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-jetbrains",
+});
+
+export const blackOpsOne = Black_Ops_One({
+  weight: "400",
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-impact",
 });

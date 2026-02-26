@@ -8,13 +8,20 @@ interface MatchHistoryProps {
   lastUpdated: string;
 }
 
-// Show all matches by default
-
 const resultColors: Record<string, string> = {
   W: "border-l-win",
   D: "border-l-draw",
   L: "border-l-loss",
 };
+
+const WIN_EMOJIS = ["🔥", "💀", "😤", "🫡", "👑", "⚽", "🎯", "💪", "🏆", "✨"];
+const DRAW_EMOJIS = ["🤷", "😐", "🤝", "💤"];
+
+function getMatchEmoji(result: string, index: number): string {
+  if (result === "W") return WIN_EMOJIS[index % WIN_EMOJIS.length];
+  if (result === "D") return DRAW_EMOJIS[index % DRAW_EMOJIS.length];
+  return "💀";
+}
 
 export function MatchHistory({ matches, lastUpdated }: MatchHistoryProps) {
   const visible = matches;
@@ -39,45 +46,49 @@ export function MatchHistory({ matches, lastUpdated }: MatchHistoryProps) {
 
   return (
     <section className="mx-auto w-full max-w-lg px-4 py-16">
-      <h3 className="mb-2 text-center font-heading text-sm uppercase tracking-[0.3em] text-text-secondary">
-        The Streak
+      <h3 className="mb-2 text-center font-impact text-lg uppercase tracking-[0.3em] text-text-secondary md:text-xl">
+        The Streak 🏆
       </h3>
 
       {/* Stats summary bar */}
       <div className="mb-6 flex items-center justify-center gap-6">
         <div className="text-center">
-          <span className="block font-display text-3xl text-text-primary">
+          <span className="block font-display text-4xl text-text-primary">
             {matches.length}
           </span>
-          <span className="font-body text-[10px] uppercase tracking-wider text-text-secondary">
+          <span className="font-body text-xs uppercase tracking-wider text-text-secondary">
             Unbeaten
           </span>
         </div>
         <div className="h-8 w-px bg-text-secondary/20" />
         <div className="text-center">
-          <span className="block font-display text-3xl text-win">
+          <span className="block font-display text-4xl text-win">
             {wins}
           </span>
-          <span className="font-body text-[10px] uppercase tracking-wider text-text-secondary">
-            Wins
+          <span className="font-body text-xs uppercase tracking-wider text-text-secondary">
+            Wins 🔥
           </span>
         </div>
         <div className="h-8 w-px bg-text-secondary/20" />
         <div className="text-center">
-          <span className="block font-display text-3xl text-draw">
+          <span className="block font-display text-4xl text-draw">
             {draws}
           </span>
-          <span className="font-body text-[10px] uppercase tracking-wider text-text-secondary">
-            Draws
+          <span className="font-body text-xs uppercase tracking-wider text-text-secondary">
+            Draws 🤝
           </span>
         </div>
         <div className="h-8 w-px bg-text-secondary/20" />
         <div className="text-center">
-          <span className="block font-display text-3xl text-text-primary">
+          <span className="block font-display text-4xl text-text-primary">
             0
           </span>
-          <span className="font-body text-[10px] uppercase tracking-wider text-text-secondary">
+          <span className="font-body text-xs uppercase tracking-wider text-text-secondary">
             Losses
+          </span>
+          {/* Meme treatment for zero losses */}
+          <span className="mt-1 block font-mono text-[10px] text-gold/60">
+            ZERO. ZILCH. NADA. なし.
           </span>
         </div>
       </div>
@@ -99,18 +110,18 @@ export function MatchHistory({ matches, lastUpdated }: MatchHistoryProps) {
           />
         </div>
         <div className="mt-2 flex justify-between">
-          <span className="font-mono text-[10px] text-win">
-            {Math.round((wins / matches.length) * 100)}% win rate
+          <span className="font-mono text-xs text-win">
+            {Math.round((wins / matches.length) * 100)}% WIN RATE (100% VIBES)
           </span>
-          <span className="font-mono text-[10px] text-text-secondary">
-            0% lost
+          <span className="font-mono text-xs text-text-secondary">
+            0% lost 💅
           </span>
         </div>
       </div>
 
       {isStale ? (
         <p className="mb-4 text-center font-body text-xs text-text-secondary">
-          \u23F1 Updated {relativeFormatter.format(-hoursAgo, "hour")}
+          ⏱ Updated {relativeFormatter.format(-hoursAgo, "hour")}
         </p>
       ) : null}
 
@@ -142,7 +153,7 @@ export function MatchHistory({ matches, lastUpdated }: MatchHistoryProps) {
                 {match.result}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="truncate font-body text-sm font-medium text-text-primary">
+                <p className="truncate font-body text-base font-medium text-text-primary">
                   {match.homeOrAway === "A" ? `${match.opponent} ` : ""}
                   <span className="font-mono">
                     {match.scoreHome}-{match.scoreAway}
@@ -150,7 +161,10 @@ export function MatchHistory({ matches, lastUpdated }: MatchHistoryProps) {
                   {match.homeOrAway === "H" ? ` ${match.opponent}` : ""}
                 </p>
               </div>
-              <span className="shrink-0 font-body text-xs text-text-secondary">
+              <span className="shrink-0 text-base">
+                {getMatchEmoji(match.result, i)}
+              </span>
+              <span className="shrink-0 font-body text-sm text-text-secondary">
                 {dateFormatter.format(new Date(match.date))}
               </span>
             </motion.div>
@@ -158,6 +172,15 @@ export function MatchHistory({ matches, lastUpdated }: MatchHistoryProps) {
         </AnimatePresence>
       </div>
 
+      {/* Glazers shade */}
+      <motion.p
+        className="mt-8 text-center font-body text-xs italic text-text-secondary/30"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+      >
+        No losses, no Glazers, no problem 🤡
+      </motion.p>
     </section>
   );
 }

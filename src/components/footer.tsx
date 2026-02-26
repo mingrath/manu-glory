@@ -12,13 +12,13 @@ export function Footer() {
             height={32}
             className="h-8 w-8 opacity-40"
           />
-          <p className="font-heading text-sm uppercase tracking-[0.3em] text-text-secondary/40">
+          <p className="font-heading text-base uppercase tracking-[0.3em] text-text-secondary/40">
             Glory Glory Man United
           </p>
-          <p className="font-body text-xs text-text-secondary">
+          <p className="font-body text-sm text-text-secondary">
             Built for the faithful.
           </p>
-          <p className="font-body text-xs text-text-secondary">
+          <p className="font-body text-sm text-text-secondary">
             Data from{" "}
             <a
               href="https://www.football-data.org/"

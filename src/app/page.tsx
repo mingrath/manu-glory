@@ -6,6 +6,8 @@ import { StreakCounter } from "@/components/streak-counter";
 import { VoteSection } from "@/components/vote-section";
 import { MatchHistory } from "@/components/match-history";
 import { Particles } from "@/components/particles";
+import { Marquee } from "@/components/marquee";
+import { ClientWrapper } from "@/components/client-wrapper";
 import { Footer } from "@/components/footer";
 
 function VoteSkeleton() {
@@ -36,16 +38,16 @@ export async function generateMetadata(): Promise<Metadata> {
   const ogUrl = `/api/og?streak=${streak}&opponent=${encodeURIComponent(opponent)}&vote=yes&pct=50`;
 
   return {
-    title: `${streak} Matches Unbeaten — Glory Glory Man United`,
-    description: `Manchester United are ${streak} matches unbeaten. Vote on whether they\u2019ll beat ${opponent}.`,
+    title: `${streak} GAMES WITHOUT KNOWING DEFEAT — Glory Glory Man United`,
+    description: `Manchester United are ${streak} matches unbeaten. WE DON'T LOSE. Vote on whether they'll beat ${opponent}.`,
     openGraph: {
-      title: `${streak} Matches Unbeaten — Glory Glory Man United`,
-      description: `Vote now: Will United beat ${opponent}?`,
+      title: `${streak} GAMES WITHOUT KNOWING DEFEAT 🔥`,
+      description: `Vote now: Will United beat ${opponent}? (obviously yes)`,
       images: [{ url: ogUrl, width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
-      title: `${streak} Matches Unbeaten`,
+      title: `${streak} GAMES WITHOUT KNOWING DEFEAT 🔥`,
       images: [ogUrl],
     },
   };
@@ -60,11 +62,11 @@ export default async function Home() {
       <>
         <Particles />
         <section className="flex min-h-screen flex-col items-center justify-center px-4">
-          <h1 className="font-heading text-2xl uppercase text-text-primary">
-            Glory Glory Man United
+          <h1 className="font-impact text-2xl uppercase text-text-primary">
+            THE VIBES ARE TEMPORARILY UNAVAILABLE
           </h1>
           <p className="mt-4 font-body text-text-secondary">
-            Match data temporarily unavailable. Check back soon.
+            Even our servers need a half-time break. Check back soon.
           </p>
         </section>
         <Footer />
@@ -96,7 +98,7 @@ export default async function Home() {
   const { carrickEra } = streakData;
 
   return (
-    <>
+    <ClientWrapper>
       <Particles />
       <StreakCounter
         streak={streakData.streak}
@@ -112,6 +114,8 @@ export default async function Home() {
             : undefined
         }
       />
+
+      <Marquee />
 
       {streakData.nextMatch && matchId ? (
         <Suspense fallback={<VoteSkeleton />}>
@@ -133,6 +137,6 @@ export default async function Home() {
       ) : null}
 
       <Footer />
-    </>
+    </ClientWrapper>
   );
 }

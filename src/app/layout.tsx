@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { anton, oswald, dmSans, jetbrainsMono } from "./fonts";
+import { anton, oswald, dmSans, jetbrainsMono, blackOpsOne } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${anton.variable} ${oswald.variable} ${dmSans.variable} ${jetbrainsMono.variable}`}
+      className={`${anton.variable} ${oswald.variable} ${dmSans.variable} ${jetbrainsMono.variable} ${blackOpsOne.variable}`}
       style={{ colorScheme: "dark" }}
     >
       <head>

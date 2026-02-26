@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { animate, useMotionValue, useTransform, motion } from "motion/react";
+import confetti from "canvas-confetti";
+import { useSounds } from "./sound-toggle";
 
 interface CarrickStats {
   wins: number;
@@ -17,10 +19,44 @@ interface StreakCounterProps {
   carrick?: CarrickStats;
 }
 
+const HYPE_PHRASES = [
+  "WE DON'T LOSE",
+  "CARRICK BALL",
+  "VIBES FC",
+  "IT'S GIVING CHAMPIONS",
+  "FEAR THE STREAK",
+  "UNSTOPPABLE",
+  "DIFFERENT GRAVY",
+  "WE GO AGAIN",
+];
+
+const RANDOM_TAGLINES = [
+  "Carrick ball.",
+  "We go again.",
+  "Vibes FC, innit.",
+  "Amorim could never.",
+  "The Theatre of Memes.",
+  "Sir Alex is smiling somewhere.",
+  "They doubted us. They were wrong.",
+  "This is what peak performance looks like.",
+  "Not even the Glazers can ruin this.",
+  "Built different (unlike our ownership).",
+];
+
 export function StreakCounter({ streak, tagline, carrick }: StreakCounterProps) {
   const count = useMotionValue(0);
   const rounded = useTransform(count, (v) => Math.round(v));
   const displayRef = useRef<HTMLSpanElement>(null);
+  const [hypePhrase, setHypePhrase] = useState(HYPE_PHRASES[0]);
+  const [randomTagline, setRandomTagline] = useState(RANDOM_TAGLINES[0]);
+  const [confettiFired, setConfettiFired] = useState(false);
+  const { playCrowdRoar } = useSounds();
+
+  // Pick random phrases on mount (client only)
+  useEffect(() => {
+    setHypePhrase(HYPE_PHRASES[Math.floor(Math.random() * HYPE_PHRASES.length)]);
+    setRandomTagline(RANDOM_TAGLINES[Math.floor(Math.random() * RANDOM_TAGLINES.length)]);
+  }, []);
 
   useEffect(() => {
     const prefersReduced = window.matchMedia(
@@ -35,10 +71,37 @@ export function StreakCounter({ streak, tagline, carrick }: StreakCounterProps) 
     const controls = animate(count, streak, {
       duration: 1.5,
       ease: "easeOut",
+      onComplete: () => {
+        if (!confettiFired) {
+          // Red + gold confetti explosion
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.5 },
+            colors: ["#E31B23", "#D4A843", "#FF2D37", "#F0EDE6"],
+          });
+          confetti({
+            particleCount: 50,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 },
+            colors: ["#E31B23", "#D4A843"],
+          });
+          confetti({
+            particleCount: 50,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 },
+            colors: ["#E31B23", "#D4A843"],
+          });
+          setConfettiFired(true);
+          playCrowdRoar();
+        }
+      },
     });
 
     return () => controls.stop();
-  }, [count, streak]);
+  }, [count, streak, confettiFired, playCrowdRoar]);
 
   useEffect(() => {
     const unsubscribe = rounded.on("change", (v) => {
@@ -99,12 +162,20 @@ export function StreakCounter({ streak, tagline, carrick }: StreakCounterProps) 
             priority
           />
         </motion.span>
-        <span className="block font-heading text-sm uppercase tracking-[0.3em] text-text-secondary md:text-base">
-          Unbeaten Streak
-        </span>
+
+        {/* Hype phrase in Impact font instead of boring "Unbeaten Streak" */}
+        <motion.span
+          className="block font-impact text-lg uppercase tracking-wider text-red md:text-2xl"
+          initial={{ opacity: 0, scale: 1.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4, delay: 0.3, type: "spring", stiffness: 200 }}
+        >
+          {hypePhrase}
+        </motion.span>
+
         <motion.span
           ref={displayRef}
-          className="mt-2 block font-display text-[96px] leading-none text-text-primary md:text-[180px]"
+          className="mt-2 block font-display text-[120px] leading-none text-text-primary md:text-[220px]"
           style={{
             textShadow: "0 0 120px rgba(227,27,35,0.3)",
             fontVariantNumeric: "tabular-nums",
@@ -115,16 +186,27 @@ export function StreakCounter({ streak, tagline, carrick }: StreakCounterProps) 
         >
           {streak}
         </motion.span>
-        <span className="block font-heading text-sm uppercase tracking-[0.3em] text-text-secondary md:text-base">
-          Matches
+
+        <span className="block font-impact text-base uppercase tracking-widest text-text-secondary md:text-lg">
+          GAMES WITHOUT KNOWING DEFEAT
         </span>
       </h1>
 
       {tagline ? (
-        <p className="relative z-10 mt-6 rounded-full border border-gold/30 px-4 py-1.5 font-body text-xs text-text-secondary md:text-sm">
+        <p className="relative z-10 mt-6 rounded-full border border-gold/30 px-5 py-2 font-body text-sm text-text-secondary md:text-base">
           {tagline}
         </p>
       ) : null}
+
+      {/* Random meme tagline */}
+      <motion.p
+        className="relative z-10 mt-3 font-body text-sm italic text-gold/70 md:text-base"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 2 }}
+      >
+        &ldquo;{randomTagline}&rdquo;
+      </motion.p>
 
       {/* Carrick era callout */}
       {carrick ? (
@@ -135,20 +217,22 @@ export function StreakCounter({ streak, tagline, carrick }: StreakCounterProps) 
           transition={{ delay: 1.8, duration: 0.8 }}
         >
           <div className="h-px w-16 bg-gold/30" />
-          <p className="max-w-xs text-center font-heading text-sm uppercase tracking-wider text-text-primary md:text-base">
+          <p className="max-w-sm text-center font-heading text-base uppercase tracking-wider text-text-primary md:text-lg">
             Since Michael Carrick took charge,{" "}
-            <span className="text-gold">we never lost</span>
+            <span className="animate-glitch inline-block text-gold">
+              we never lost
+            </span>
           </p>
           <div className="flex items-center gap-4">
-            <span className="font-mono text-xs text-win">{carrick.wins}W</span>
-            <span className="font-mono text-xs text-draw">{carrick.draws}D</span>
-            <span className="font-mono text-xs text-loss">{carrick.losses}L</span>
-            <span className="font-mono text-xs text-text-secondary">
+            <span className="font-mono text-sm text-win">{carrick.wins}W 🔥</span>
+            <span className="font-mono text-sm text-draw">{carrick.draws}D 🤷</span>
+            <span className="font-mono text-sm text-loss">{carrick.losses}L 💀</span>
+            <span className="font-mono text-sm text-text-secondary">
               in {carrick.matches} matches
             </span>
           </div>
-          <p className="mt-1 font-body text-xs italic text-text-secondary/50 md:text-sm">
-            This is our time.
+          <p className="mt-1 font-impact text-sm uppercase text-text-secondary/50 md:text-base">
+            This is our time. 🫡
           </p>
         </motion.div>
       ) : null}
