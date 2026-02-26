@@ -94,10 +94,6 @@ export default async function Home() {
       : undefined;
 
   const { carrickEra } = streakData;
-  const carrickSubtitle =
-    carrickEra.matches > 0
-      ? `Since Michael Carrick took charge \u2014 ${carrickEra.wins}W ${carrickEra.draws}D ${carrickEra.losses}L in ${carrickEra.matches} matches`
-      : undefined;
 
   return (
     <>
@@ -105,7 +101,16 @@ export default async function Home() {
       <StreakCounter
         streak={streakData.streak}
         tagline={tagline}
-        subtitle={carrickSubtitle}
+        carrick={
+          carrickEra.matches > 0
+            ? {
+                wins: carrickEra.wins,
+                draws: carrickEra.draws,
+                losses: carrickEra.losses,
+                matches: carrickEra.matches,
+              }
+            : undefined
+        }
       />
 
       {streakData.nextMatch && matchId ? (

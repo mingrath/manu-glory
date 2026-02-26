@@ -3,13 +3,20 @@
 import { useEffect, useRef } from "react";
 import { animate, useMotionValue, useTransform, motion } from "motion/react";
 
+interface CarrickStats {
+  wins: number;
+  draws: number;
+  losses: number;
+  matches: number;
+}
+
 interface StreakCounterProps {
   streak: number;
   tagline?: string;
-  subtitle?: string;
+  carrick?: CarrickStats;
 }
 
-export function StreakCounter({ streak, tagline, subtitle }: StreakCounterProps) {
+export function StreakCounter({ streak, tagline, carrick }: StreakCounterProps) {
   const count = useMotionValue(0);
   const rounded = useTransform(count, (v) => Math.round(v));
   const displayRef = useRef<HTMLSpanElement>(null);
@@ -81,15 +88,31 @@ export function StreakCounter({ streak, tagline, subtitle }: StreakCounterProps)
         </p>
       ) : null}
 
-      {subtitle ? (
-        <motion.p
-          className="relative z-10 mt-3 font-body text-xs text-text-secondary/60 md:text-sm"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+      {/* Carrick era callout */}
+      {carrick ? (
+        <motion.div
+          className="relative z-10 mt-8 flex flex-col items-center gap-3"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.8, duration: 0.8 }}
         >
-          {subtitle}
-        </motion.p>
+          <div className="h-px w-16 bg-gold/30" />
+          <p className="max-w-xs text-center font-heading text-sm uppercase tracking-wider text-text-primary md:text-base">
+            Since Michael Carrick took charge,{" "}
+            <span className="text-gold">we never lost</span>
+          </p>
+          <div className="flex items-center gap-4">
+            <span className="font-mono text-xs text-win">{carrick.wins}W</span>
+            <span className="font-mono text-xs text-draw">{carrick.draws}D</span>
+            <span className="font-mono text-xs text-loss">{carrick.losses}L</span>
+            <span className="font-mono text-xs text-text-secondary">
+              in {carrick.matches} matches
+            </span>
+          </div>
+          <p className="mt-1 font-body text-xs italic text-text-secondary/50 md:text-sm">
+            This is our time.
+          </p>
+        </motion.div>
       ) : null}
 
       {/* Scroll indicator */}
