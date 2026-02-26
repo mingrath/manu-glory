@@ -93,10 +93,20 @@ export default async function Home() {
       ? `Only unbeaten side in the Premier League in ${new Date().getFullYear()}`
       : undefined;
 
+  const { carrickEra } = streakData;
+  const carrickSubtitle =
+    carrickEra.matches > 0
+      ? `Since Michael Carrick took charge \u2014 ${carrickEra.wins}W ${carrickEra.draws}D ${carrickEra.losses}L in ${carrickEra.matches} matches`
+      : undefined;
+
   return (
     <>
       <Particles />
-      <StreakCounter streak={streakData.streak} tagline={tagline} />
+      <StreakCounter
+        streak={streakData.streak}
+        tagline={tagline}
+        subtitle={carrickSubtitle}
+      />
 
       {streakData.nextMatch && matchId ? (
         <Suspense fallback={<VoteSkeleton />}>

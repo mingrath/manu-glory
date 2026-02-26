@@ -6,9 +6,10 @@ import { animate, useMotionValue, useTransform, motion } from "motion/react";
 interface StreakCounterProps {
   streak: number;
   tagline?: string;
+  subtitle?: string;
 }
 
-export function StreakCounter({ streak, tagline }: StreakCounterProps) {
+export function StreakCounter({ streak, tagline, subtitle }: StreakCounterProps) {
   const count = useMotionValue(0);
   const rounded = useTransform(count, (v) => Math.round(v));
   const displayRef = useRef<HTMLSpanElement>(null);
@@ -78,6 +79,17 @@ export function StreakCounter({ streak, tagline }: StreakCounterProps) {
         <p className="relative z-10 mt-6 rounded-full border border-gold/30 px-4 py-1.5 font-body text-xs text-text-secondary md:text-sm">
           {tagline}
         </p>
+      ) : null}
+
+      {subtitle ? (
+        <motion.p
+          className="relative z-10 mt-3 font-body text-xs text-text-secondary/60 md:text-sm"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.8, duration: 0.8 }}
+        >
+          {subtitle}
+        </motion.p>
       ) : null}
 
       {/* Scroll indicator */}

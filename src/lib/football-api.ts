@@ -1,7 +1,10 @@
-import { Match, MatchDisplay, StreakData } from "./types";
+import { Match, MatchDisplay, StreakData, CarrickEra } from "./types";
 
 const MUFC_ID = 66;
 const API_BASE = "https://api.football-data.org/v4";
+// Michael Carrick appointed interim manager on Jan 13, 2026
+// First match: Man United 2-0 Man City on Jan 17, 2026
+const CARRICK_START = "2026-01-13T00:00:00Z";
 
 async function fetchFromAPI(endpoint: string): Promise<unknown> {
   const res = await fetch(`${API_BASE}${endpoint}`, {
@@ -71,6 +74,18 @@ export async function getStreakData(): Promise<StreakData> {
 
   const streakMatches = calculateStreak(finished);
 
+  // Carrick era stats
+  const carrickMatches = finished.filter(
+    (m) => new Date(m.date).getTime() >= new Date(CARRICK_START).getTime()
+  );
+  const carrickEra: CarrickEra = {
+    matches: carrickMatches.length,
+    wins: carrickMatches.filter((m) => m.result === "W").length,
+    draws: carrickMatches.filter((m) => m.result === "D").length,
+    losses: carrickMatches.filter((m) => m.result === "L").length,
+    startDate: CARRICK_START,
+  };
+
   const nextRaw = scheduled[0] ?? null;
   const nextMatch = nextRaw
     ? {
@@ -93,6 +108,7 @@ export async function getStreakData(): Promise<StreakData> {
     streak: streakMatches.length,
     matches: streakMatches,
     nextMatch,
+    carrickEra,
     lastUpdated: new Date().toISOString(),
   };
 }

@@ -46,6 +46,14 @@ export interface MatchDisplay {
   competition: string;
 }
 
+export interface CarrickEra {
+  matches: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  startDate: string;
+}
+
 export interface StreakData {
   streak: number;
   matches: MatchDisplay[];
@@ -55,5 +63,6 @@ export interface StreakData {
     date: string;
     homeOrAway: "H" | "A";
   } | null;
+  carrickEra: CarrickEra;
   lastUpdated: string;
 }
