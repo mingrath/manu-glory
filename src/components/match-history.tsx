@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import type { MatchDisplay } from "@/lib/types";
 
@@ -9,7 +8,7 @@ interface MatchHistoryProps {
   lastUpdated: string;
 }
 
-const INITIAL_SHOW = 3;
+// Show all matches by default
 
 const resultColors: Record<string, string> = {
   W: "border-l-win",
@@ -18,8 +17,7 @@ const resultColors: Record<string, string> = {
 };
 
 export function MatchHistory({ matches, lastUpdated }: MatchHistoryProps) {
-  const [expanded, setExpanded] = useState(false);
-  const visible = expanded ? matches : matches.slice(0, INITIAL_SHOW);
+  const visible = matches;
 
   const wins = matches.filter((m) => m.result === "W").length;
   const draws = matches.filter((m) => m.result === "D").length;
@@ -160,17 +158,6 @@ export function MatchHistory({ matches, lastUpdated }: MatchHistoryProps) {
         </AnimatePresence>
       </div>
 
-      {matches.length > INITIAL_SHOW ? (
-        <button
-          onClick={() => setExpanded((prev) => !prev)}
-          className="mx-auto mt-4 block font-body text-sm text-text-secondary transition-[color] duration-200 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
-          style={{ touchAction: "manipulation" }}
-        >
-          {expanded
-            ? "Show Less \u25B4"
-            : `Show All ${matches.length} Matches \u25BE`}
-        </button>
-      ) : null}
     </section>
   );
 }
