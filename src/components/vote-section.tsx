@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { VoteResultBar } from "./vote-result-bar";
 
@@ -16,8 +16,7 @@ type VoteState = "idle" | "voting" | "voted" | "error";
 
 const STORAGE_KEY = "manu-glory-votes-v1";
 
-function hasVoted(matchId: string): string | null {
-  if (typeof window === "undefined") return null;
+function getStoredVote(matchId: string): string | null {
   try {
     const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
     return stored[matchId] ?? null;
@@ -43,12 +42,18 @@ export function VoteSection({
   homeOrAway,
   initialVotes,
 }: VoteSectionProps) {
-  const existingVote = hasVoted(matchId);
-  const [state, setState] = useState<VoteState>(
-    existingVote ? "voted" : "idle"
-  );
-  const [userVote, setUserVote] = useState<string | null>(existingVote);
+  // Always start as "idle" to match server render, then check localStorage after hydration
+  const [state, setState] = useState<VoteState>("idle");
+  const [userVote, setUserVote] = useState<string | null>(null);
   const [votes, setVotes] = useState(initialVotes);
+
+  useEffect(() => {
+    const existing = getStoredVote(matchId);
+    if (existing) {
+      setUserVote(existing);
+      setState("voted");
+    }
+  }, [matchId]);
 
   const dateFormatter = new Intl.DateTimeFormat("en-GB", {
     weekday: "short",
