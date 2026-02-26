@@ -23,7 +23,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${anton.variable} ${oswald.variable} ${dmSans.variable} ${jetbrainsMono.variable} ${blackOpsOne.variable}`}
-      style={{ colorScheme: "dark" }}
+      style={{ colorScheme: "dark", fontSize: "18px" }}
     >
       <head>
         <meta name="theme-color" content="#0A0A0F" />

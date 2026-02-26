@@ -46,6 +46,10 @@ export function Footer() {
             </svg>
             GitHub
           </a>
+          <p className="mt-3 max-w-sm text-center font-body text-[11px] leading-relaxed text-text-secondary/30">
+            This site is not affiliated with Manchester United or the Premier League.
+            Voting is purely for entertainment — no gambling, no betting, no money involved.
+          </p>
         </div>
       </footer>
 

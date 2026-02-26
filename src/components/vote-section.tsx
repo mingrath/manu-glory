@@ -247,6 +247,10 @@ export function VoteSection({
           Couldn&apos;t register your vote. Tap to try again.
         </p>
       ) : null}
+
+      <p className="mt-6 max-w-xs text-center font-body text-[11px] leading-relaxed text-text-secondary/40">
+        This is a fan poll for entertainment only. No money, no bets, no gambling. Just vibes.
+      </p>
     </section>
   );
 }
