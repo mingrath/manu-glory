@@ -7,5 +7,12 @@
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
-  }
+  },
+  "workers_dev": true,
+  "routes": [
+    {
+      "pattern": "manu-glory.ohmmingrath.com",
+      "custom_domain": true
+    }
+  ]
 }
