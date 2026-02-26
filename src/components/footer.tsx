@@ -9,6 +9,17 @@ export function Footer() {
           Built for the faithful.
         </p>
         <p className="font-body text-xs text-text-secondary">
+          Made by{" "}
+          <a
+            href="https://mingrath.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline transition-[color] duration-200 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+          >
+            mingrath.com
+          </a>
+        </p>
+        <p className="font-body text-xs text-text-secondary">
           Data from{" "}
           <a
             href="https://www.football-data.org/"
