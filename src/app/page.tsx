@@ -1,41 +1,12 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 import { getStreakData, generateMatchId } from "@/lib/football-api";
 import { getVoteCounts } from "@/lib/votes";
+import { StreakCounter } from "@/components/streak-counter";
+import { VoteSection } from "@/components/vote-section";
+import { MatchHistory } from "@/components/match-history";
+import { Particles } from "@/components/particles";
 import { Footer } from "@/components/footer";
-
-const StreakCounter = dynamic(
-  () =>
-    import("@/components/streak-counter").then((mod) => ({
-      default: mod.StreakCounter,
-    })),
-  { ssr: false }
-);
-
-const VoteSection = dynamic(
-  () =>
-    import("@/components/vote-section").then((mod) => ({
-      default: mod.VoteSection,
-    })),
-  { ssr: false }
-);
-
-const MatchHistory = dynamic(
-  () =>
-    import("@/components/match-history").then((mod) => ({
-      default: mod.MatchHistory,
-    })),
-  { ssr: false }
-);
-
-const Particles = dynamic(
-  () =>
-    import("@/components/particles").then((mod) => ({
-      default: mod.Particles,
-    })),
-  { ssr: false }
-);
 
 function VoteSkeleton() {
   return (
